@@ -1,0 +1,221 @@
+paths:
+  unprocessed_data: "data/unprocessed/results.csv"
+  fixture_data: "data/schedule_final.csv"
+  artifacts_dir: "artifacts/"
+
+constants:
+  RHO: -0.05
+  INITIAL_ELO: 1500.0
+
+training:
+  seed: 42
+  n_iter_base: 50
+  n_iter_stack: 20
+
+k_values:
+  # k-value 60
+  FIFA World Cup: 60
+  
+  # k-value 50
+  Copa América: 50
+  African Cup of Nations: 50
+  UEFA Euro: 50
+  AFC Asian Cup: 50
+  Gold Cup: 50
+  Oceania Nations Cup: 50
+  Confederations Cup: 50
+  CONMEBOL–UEFA Cup of Champions: 50
+
+  # --- ELIMINATORIAS PRINCIPALES Y LIGAS DE NACIONES [K = 40] ---
+  FIFA World Cup qualification: 40
+  UEFA Euro qualification: 40
+  African Cup of Nations qualification: 40
+  AFC Asian Cup qualification: 40
+  UEFA Nations League: 40
+  CONCACAF Nations League: 40
+  Copa América qualification: 40
+
+  # --- TORNEOS REGIONALES OFICIALES / JUEGOS [K = 25] ---
+  CECAFA Cup: 25
+  CFU Caribbean Cup: 25
+  COSAFA Cup: 25
+  AFF Championship: 25
+  ASEAN Championship: 25
+  Gulf Cup: 25
+  Arab Cup: 25
+  WAFF Championship: 25
+  EAFF Championship: 25
+  SAFF Cup: 25
+  Olympic Games: 25
+  Asian Games: 25
+  All-African Games: 25
+  South Pacific Games: 25
+  Pacific Games: 25
+  Southeast Asian Games: 25
+  Central American and Caribbean Games: 25
+  Bolivarian Games: 25
+  Pan American Championship: 25
+  CONCACAF Championship: 25
+  CCCF Championship: 25
+  NAFC Championship: 25
+  NAFU Championship: 25
+  UNCAF Cup: 25
+  Afro-Asian Games: 25
+  Indian Ocean Island Games: 25
+
+  # --- ELIMINATORIAS DE TORNEOS REGIONALES [K = 15] ---
+  CFU Caribbean Cup qualification: 15
+  AFC Challenge Cup qualification: 15
+  Gold Cup qualification: 15
+  CONCACAF Nations League qualification: 15
+  AFF Championship qualification: 15
+  Arab Cup qualification: 15
+  Oceania Nations Cup qualification: 15
+  COSAFA Cup qualification: 15
+  EAFF Championship qualification: 15
+  ASEAN Championship qualification: 15
+  CONCACAF Championship qualification: 15
+
+  # --- AMISTOSOS TOP E INVITACIONALES IMPORTANTES [K = 10] ---
+  Friendly: 10
+  FIFA Series: 10
+  Merdeka Tournament: 10
+  British Home Championship: 10
+  Nordic Championship: 10
+  King's Cup: 10
+  Kirin Cup: 10
+  Kirin Challenge Cup: 10
+  Korea Cup: 10
+  Nehru Cup: 10
+  Balkan Cup: 10
+  Baltic Cup: 10
+  Central European International Cup: 10
+  Superclásico de las Américas: 10
+  Mundialito: 10
+  Tournoi de France: 10
+  USA Cup: 10
+  Rous Cup: 10
+  Joe Robbie Cup: 10
+  Marlboro Cup: 10
+  Miami Cup: 10
+
+  # --- NO-FIFA / EXHIBICIÓN / COPAS BILATERALES HISTÓRICAS [K = 5] ---
+  CONIFA World Football Cup: 5
+  CONIFA European Football Cup: 5
+  CONIFA World Football Cup qualification: 5
+  CONIFA Africa Football Cup: 5
+  CONIFA Asia Cup: 5
+  CONIFA South America Football Cup: 5
+  ConIFA Challenger Cup: 5
+  Viva World Cup: 5
+  FIFI Wild Cup: 5
+  Island Games: 5
+  Inter Games: 5
+  Muratti Vase: 5
+  Tynwald Hill Tournament: 5
+  Benedikt Fontana Cup: 5
+  Amílcar Cabral Cup: 5
+  Windward Islands Tournament: 5
+  Coupe de l'Outre-Mer: 5
+  ABCS Tournament: 5
+  MSG Prime Minister's Cup: 5
+  Prime Minister's Cup: 5
+  Soccer Ashes: 5
+  Copa Lipton: 5
+  Copa Newton: 5
+  Copa Roca: 5
+  Copa Chevallier Boutell: 5
+  Copa Rio Branco: 5
+  Copa Oswaldo Cruz: 5
+  Copa Carlos Dittborn: 5
+  Copa Juan Pinto Durán: 5
+  Copa Paz del Chaco: 5
+  Copa del Pacífico: 5
+  Copa Premio Honor Uruguayo: 5
+  Copa Premio Honor Argentino: 5
+  Copa Artigas: 5
+  Copa Bernardo O'Higgins: 5
+  Copa Ramón Castilla: 5
+  Copa Félix Bogado: 5
+  Copa Confraternidad: 5
+  Far Eastern Championship Games: 5
+  Dynasty Cup: 5
+  Lunar New Year Cup: 5
+  Merlion Cup: 5
+  Jordan International Tournament: 5
+  East Asian Games: 5
+  Simba Tournament: 5
+  Intercontinental Cup: 5
+  Kuneitra Cup: 5
+  Dunhill Cup: 5
+  UNIFFAC Cup: 5
+  Millennium Cup: 5
+  Pacific Mini Games: 5
+  South Pacific Mini Games: 5
+  GaNEFo: 5
+  Nile Basin Tournament: 5
+  Inter-Allied Games: 5
+  King Hassan II Tournament: 5
+  Atlantic Cup: 5
+  Tournament Burkina Faso: 5
+  SKN Football Festival: 5
+  Beijing International Friendship Tournament: 5
+  CAFA Nations Cup: 5
+  VFF Cup: 5
+  Four Nations Tournament: 5
+  Four Nations' Cup: 5
+  Three Nations Cup: 5
+  Tri Nation Tournament: 5
+  Tri-Nations Series: 5
+  Unity Cup: 5
+  Mahinda Rajapaksa Cup: 5
+  Mapinduzi Cup: 5
+  Peace Cup: 5
+  Nations Cup: 5
+  Morocco, Capital of African Football: 5
+  Mauritius Four Nations Cup: 5
+  Guangzhou International Friendship Tournament: 5
+  Great Wall Cup: 5
+  Matthews Cup: 5
+  Dakar Tournament: 5
+  Scania 100 Tournament: 5
+  Corsica Cup: 5
+  Dragon Cup: 5
+  OSN Cup: 5
+  Navruz Cup: 5
+  Canadian Shield: 5
+  Al Ain International Cup: 5
+  Phillip Seaga Cup: 5
+  Zambian Independence Tournament: 5
+  Niamh Challenge Cup: 5
+  Hungary Heritage Cup: 5
+  World Unity Cup: 5
+  Outrigger Challenge Cup: 5
+  Cup of Ancient Civilizations: 5
+  Atlantic Heritage Cup: 5
+  Marianas Cup: 5
+  Mukuru 4 Nations: 5
+  Évence Coppée Trophy: 5
+  Open International Championship: 5
+  Real Madrid 75th Anniversary Cup: 5
+  FIFA 75th Anniversary Cup: 5
+  The Other Final: 5
+  TIFOCO Tournament: 5
+  South Asian Super Cup: 5
+  Indonesia Tournament: 5
+  Southeast Asian Peninsular Games: 5
+  South Asian Games: 5
+  Melanesia Cup: 5
+  Vietnam Independence Cup: 5
+  Palestine Cup: 5
+  African Friendship Games: 5
+  West African Cup: 5
+  Malta International Tournament: 5
+  Brazil Independence Cup: 5
+  CONCACAF Series: 5
+  United Arab Emirates Friendship Tournament: 5
+  UDEAC Cup: 5
+  Cyprus International Tournament: 5
+  AFC Challenge Cup: 5
+  Trans-Tasman Cup: 5
+  ELF Cup: 5
