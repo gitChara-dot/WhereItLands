@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.stats import poisson
-
+from typing import List, Tuple
 def get_coles_dixon_correction(home_goals: int, away_goals: int, lambda_home: float, lambda_away: float, rho: float) -> float:
     """Aplica la corrección de Coles-Dixon para resultados bajos."""
     x = home_goals
@@ -82,6 +82,28 @@ def get_top_x_probabilities(probability_matrix: np.ndarray, iterations: int) -> 
     
     return top_x_probabilities_str
 
+def get_top_x_probabilities_array(probability_matrix: np.ndarray, iterations: int) -> List[Tuple[int, int, float]]:
+    """Obtiene los 'iterations' resultados más probables de un partido, como array de 3 partes."""
+    flattened_matrix = probability_matrix.flatten()
+    if iterations <= 0 or iterations >= len(flattened_matrix):
+        print("Invalid iteration number")
+        return []
+    
+    top_x = np.argsort(flattened_matrix)[-iterations:][::-1]
+    indexes = np.unravel_index(top_x, probability_matrix.shape)
+
+    top_results_array = []
+
+
+    for i in range(iterations):
+        current_result_array = np.array([])
+        row = indexes[0][i]
+        col = indexes[1][i]
+        prob = probability_matrix[row, col] * 100
+
+        top_results_array.append((row, col, prob))
+    
+    return top_results_array
 # -------------------------------------------------------------
 # Funciones auxiliares para calcular probabilidades de N goles
 # -------------------------------------------------------------

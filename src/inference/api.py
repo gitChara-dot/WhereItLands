@@ -11,15 +11,16 @@ away_stack = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    
     print("Iniciando servidor. Cargando modelos.")
     load_models()
-
-    yield
-
-    print("Deteniendo servidor.")
-    global home_stack, away_stack
-    home_stack = None
-    away_stack = None
+    try:
+        yield
+    finally:
+        print("Deteniendo servidor.")
+        global home_stack, away_stack
+        home_stack = None
+        away_stack = None
 
 def load_models():
     """Carga los modelos entrenados desde la bóveda (artifacts) al iniciar la API."""

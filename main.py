@@ -44,6 +44,9 @@ def evaluate_models(home_stack, away_stack, x_test, y_reg_test_home, y_reg_test_
     final_acc = accuracy_score(y_real, y_pred)
     print(f"Final average prediction for win/draw/lose: {final_acc * 100:.2f}%")
 
+def get_predictions(home_team : str, away_team : str):
+    
+
 
 def main():
     parser = argparse.ArgumentParser(description="WhereItLands - Predicción de Fútbol")
@@ -69,7 +72,7 @@ def main():
         
         # 4. Dividir datos
         training_cols = ["diff_goals_5_matches", "diff_vsgoals_5_matches", "diff_streak_5_matches", "elo_diff", "home_advantage"]
-        x_train, x_val, x_test, y_train, y_val, y_test, y_reg_home_train, y_reg_away_train, y_reg_test_home, y_reg_test_away = split_data(df_final, training_cols)
+        x_train, x_test, y_reg_home_train, y_reg_away_train, y_reg_test_home, y_reg_test_away = split_data(df_final, training_cols)
         
         print(f"Entrenamiento con {len(x_train)} partidos.")
         
