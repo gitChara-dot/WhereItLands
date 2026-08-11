@@ -44,9 +44,6 @@ def evaluate_models(home_stack, away_stack, x_test, y_reg_test_home, y_reg_test_
     final_acc = accuracy_score(y_real, y_pred)
     print(f"Final average prediction for win/draw/lose: {final_acc * 100:.2f}%")
 
-def get_predictions(home_team : str, away_team : str):
-    
-
 
 def main():
     parser = argparse.ArgumentParser(description="WhereItLands - Predicción de Fútbol")

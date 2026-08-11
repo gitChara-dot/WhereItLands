@@ -158,6 +158,15 @@ def save_models(home_stack: StackingRegressor, away_stack: StackingRegressor, ar
     joblib.dump(away_stack, away_path)
     print(f"Modelos guardados exitosamente en '{artifacts_dir}'.")
 
+def save_artifacts(elo_sys : EloSystem, team_history : pd.DataFrame, artifacts_dir : str) -> None:
+    """Guarda el sistema de ELO, como .joblib, y el dataframe de los partidos historicos, como .parquet, dentro de la bóveda"""
+    os.makedirs(artifacts_dir, exist_ok=True)
+
+    elo_path = os.path.join(artifacts_dir, "elo_system.joblib")
+    dataframe_path = os.path.join(artifacts_dir, "team_history_dataframe.parquet")
+
+    joblib.dump(elo_sys, elo_path)
+    team_history.to_parquet(dataframe_path)
 
 def run_training_pipeline(config_path: str = "config/config.yaml") -> Tuple[StackingRegressor, StackingRegressor]:
     """

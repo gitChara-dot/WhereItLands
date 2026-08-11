@@ -182,3 +182,8 @@ def full_pipeline(file_path: str, elo_system) -> Tuple[pd.DataFrame, pd.DataFram
     team_history = build_team_history(df_relevant)
     df_final = build_final_features(df_relevant, team_history)
     return df_final, team_history
+
+### Helpers ###
+
+def get_available_teams(team_history : pd.DataFrame) -> list[str]:
+    return team_history["team"].unique().tolist()
