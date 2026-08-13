@@ -96,10 +96,11 @@ def get_teams_list():
             status_code=500,
             detail='La información de los equipos no se ha inicializado de forma correcta. Intente luego.'
         )
-    return get_available_teams(team_history)
+    return {"teams": get_available_teams(team_history)}
 
 @app.post("/prediction", response_model=PredictionResponse)
 def get_prediction(data: PredictionRequest):
+    
     global team_history, home_stack, away_stack, elo_system
 
     if home_stack is None or away_stack is None:
@@ -132,7 +133,7 @@ def get_prediction(data: PredictionRequest):
             detail='El equipo no está en la lista de equipos válidos.'
         )
     
-    return get_predictions(
+    return {"results" : get_predictions(
         home_team, 
         away_team,
         home_stack, 
@@ -141,6 +142,6 @@ def get_prediction(data: PredictionRequest):
         elo_system, 
         team_history,
         config=load_config()
-    )
+    )}
     
     
