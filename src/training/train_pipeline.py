@@ -1,9 +1,10 @@
 import os
 import yaml
 import joblib
+import argparse
 import numpy as np
 import pandas as pd
-from typing import Tuple, Dict, Any, List
+from typing import Tuple, Dict, Any, List, Optional
 from sklearn.model_selection import TimeSeriesSplit, RandomizedSearchCV
 from sklearn.ensemble import ExtraTreesRegressor, StackingRegressor
 from sklearn.linear_model import RidgeCV
@@ -17,18 +18,17 @@ from src.data_processing.pipeline import full_pipeline, split_data
 
 
 class ModelTrainer:
-    """
-    Clase responsable de configurar, optimizar y entrenar los modelos de regresión 
-    (StackingRegressor con XGBoost, LightGBM y ExtraTrees) para los goles de local y visitante.
-    """
+    """Clase responsable de configurar, optimizar y entrenar los modelos de regresion para los goles de local y visitante."""
+
     def __init__(self, config: Dict[str, Any]) -> None:
-        self.config = config
+        self.config: Dict[str, Any] = config
         self.seed: int = config['training']['seed']
         self.n_iter_base: int = config['training']['n_iter_base']
-        self.tscv = TimeSeriesSplit(n_splits=5)
+        self.tscv: TimeSeriesSplit = TimeSeriesSplit(n_splits=5)
 
+    @staticmethod
     def get_param_distributions() -> Tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any], np.ndarray]:
-        """Devuelve las distribuciones de hiperparámetros para RandomizedSearchCV."""
+        """Devuelve las distribuciones de hiperparametros para RandomizedSearchCV."""
         xgb_param_dist = {
             'n_estimators': randint(50, 250),
             'learning_rate': uniform(0.01, 0.15),
@@ -61,10 +61,9 @@ class ModelTrainer:
         is_home: bool
     ) -> StackingRegressor:
         """Construye y entrena el StackingRegressor para el objetivo especificado."""
-        xgb_dist, lgbm_dist, et_dist, alphas = ModelTrainer.get_param_distributions() # type: ignore
+        xgb_dist, lgbm_dist, et_dist, alphas = ModelTrainer.get_param_distributions()
         final_optimized_regressor = RidgeCV(alphas=alphas, cv=self.tscv)
 
-        # 1. XGBoost Regressor
         search_xgb = RandomizedSearchCV(
             estimator=XGBRegressor(objective='count:poisson', eval_metric='poisson-nloglik'),
             param_distributions=xgb_dist,
@@ -75,9 +74,8 @@ class ModelTrainer:
         )
         search_xgb.fit(x_train, y_train)
 
-        # 2. LightGBM Regressor
         search_lgbm = RandomizedSearchCV(
-            estimator=LGBMRegressor(objective='poisson', verbose=-1), # type: ignore
+            estimator=LGBMRegressor(objective='poisson', verbose=-1), #type: ignore
             param_distributions=lgbm_dist,
             n_iter=self.n_iter_base,
             n_jobs=-1,
@@ -86,8 +84,7 @@ class ModelTrainer:
         )
         search_lgbm.fit(x_train, y_train)
 
-        # 3. ExtraTrees Regressor con TransformedTargetRegressor (log1p / expm1)
-        criterion = 'squared_error' if is_home else 'absolute_error'
+        criterion: str = 'squared_error' if is_home else 'absolute_error'
         search_et = RandomizedSearchCV(
             estimator=ExtraTreesRegressor(criterion=criterion),
             param_distributions=et_dist,
@@ -104,7 +101,6 @@ class ModelTrainer:
             inverse_func=np.expm1
         )
 
-        # Stacking Regressor
         estimators = [
             ('xgb', search_xgb.best_estimator_),
             ('et', et_wrapped),
@@ -143,52 +139,59 @@ def train_models(
     y_reg_away_train: pd.Series, 
     config: Dict[str, Any]
 ) -> Tuple[StackingRegressor, StackingRegressor]:
-    """Función de conveniencia para entrenar modelos desde main.py u otros scripts."""
+    """Funcion auxiliar para instanciar el entrenador y ejecutar el entrenamiento de modelos."""
     trainer = ModelTrainer(config)
     return trainer.train(x_train, y_reg_home_train, y_reg_away_train)
 
 
 def save_models(home_stack: StackingRegressor, away_stack: StackingRegressor, artifacts_dir: str) -> None:
-    """Guarda los modelos entrenados en archivos .joblib dentro de la bóveda."""
+    """Guarda los modelos entrenados en archivos .joblib dentro del directorio de artefactos."""
     os.makedirs(artifacts_dir, exist_ok=True)
-    home_path = os.path.join(artifacts_dir, "home_stack.joblib")
-    away_path = os.path.join(artifacts_dir, "away_stack.joblib")
+    home_path: str = os.path.join(artifacts_dir, "home_stack.joblib")
+    away_path: str = os.path.join(artifacts_dir, "away_stack.joblib")
 
     joblib.dump(home_stack, home_path)
     joblib.dump(away_stack, away_path)
     print(f"Modelos guardados exitosamente en '{artifacts_dir}'.")
 
-def save_artifacts(elo_sys : EloSystem, team_history : pd.DataFrame, artifacts_dir : str) -> None:
-    """Guarda el sistema de ELO, como .joblib, y el dataframe de los partidos historicos, como .parquet, dentro de la bóveda"""
-    os.makedirs(artifacts_dir, exist_ok=True)
 
-    elo_path = os.path.join(artifacts_dir, "elo_system.joblib")
-    dataframe_path = os.path.join(artifacts_dir, "team_history_dataframe.parquet")
+def save_artifacts(elo_sys: EloSystem, team_history: pd.DataFrame, artifacts_dir: str) -> None:
+    """Guarda el sistema ELO en .joblib y el dataframe historico en .parquet dentro de los artefactos."""
+    os.makedirs(artifacts_dir, exist_ok=True)
+    elo_path: str = os.path.join(artifacts_dir, "elo_system.joblib")
+    dataframe_path: str = os.path.join(artifacts_dir, "team_history_dataframe.parquet")
 
     joblib.dump(elo_sys, elo_path)
-    team_history.to_parquet(dataframe_path)
+    team_history.to_parquet(dataframe_path, index=False)
+    print(f"Sistema ELO e historial guardados exitosamente en '{artifacts_dir}'.")
 
-def run_training_pipeline(config_path: str = "config/config.yaml") -> Tuple[StackingRegressor, StackingRegressor]:
-    """
-    Función de ejecución completa del capataz (train_pipeline.py):
-    Carga configuración, procesa datos con el pipeline, entrena los modelos y los guarda en la bóveda.
-    """
+
+def run_training_pipeline(
+    config_path: str = "config/config.yaml", 
+    skip_training: bool = False
+) -> Tuple[Optional[StackingRegressor], Optional[StackingRegressor]]:
+    """Ejecuta el pipeline completo de procesamiento de datos, calculo de ELO y entrenamiento opcional de modelos."""
     with open(config_path, "r", encoding="utf-8") as f:
-        config = yaml.safe_load(f)
+        config: Dict[str, Any] = yaml.safe_load(f)
 
-    print("--- [PIPELINE] Iniciando ejecucion del Pipeline de Entrenamiento ---")
+    print("--- [PIPELINE] Iniciando ejecucion del Pipeline de Datos y ELO ---")
     
-    # 1. Instanciar Calculadora
     elo_system = EloSystem(
         k_values=config['k_values'],
         initial_elo=config['constants']['INITIAL_ELO']
     )
 
-    # 2. Llamar a los operarios (Pipeline de Datos)
-    data_path = config['paths']['unprocessed_data']
+    data_path: str = config['paths']['unprocessed_data']
     df_final, team_history = full_pipeline(data_path, elo_system)
 
-    training_cols = [
+    save_artifacts(elo_system, team_history, artifacts_dir=config['paths']['artifacts_dir'])
+
+    if skip_training:
+        print("Opcion skip_training activada. Se omitio el entrenamiento de modelos.")
+        print("--- [PIPELINE] Pipeline finalizado exitosamente (Solo artefactos) ---")
+        return None, None
+
+    training_cols: List[str] = [
         "diff_goals_5_matches", 
         "diff_vsgoals_5_matches", 
         "diff_streak_5_matches", 
@@ -196,18 +199,21 @@ def run_training_pipeline(config_path: str = "config/config.yaml") -> Tuple[Stac
         "home_advantage"
     ]
 
-    x_train, _,  y_reg_home_train, y_reg_away_train, _, _ = split_data(df_final, training_cols)
+    x_train, _, y_reg_home_train, y_reg_away_train, _, _ = split_data(df_final, training_cols)
 
-    # 3. Entrenar a XGBoost / LightGBM / ExtraTrees en Stacking
     home_stack, away_stack = train_models(x_train, y_reg_home_train, y_reg_away_train, config)
-
-    # 4. Guardar en la bóveda
     save_models(home_stack, away_stack, config['paths']['artifacts_dir'])
-    save_artifacts(elo_system, team_history, artifacts_dir=config['paths']['artifacts_dir'])
     print("--- [PIPELINE] Pipeline finalizado con exito ---")
 
     return home_stack, away_stack
 
 
 if __name__ == "__main__":
-    run_training_pipeline()
+    parser = argparse.ArgumentParser(description="Pipeline de entrenamiento y generacion de artefactos.")
+    parser.add_argument(
+        "--skip-training", 
+        action="store_true", 
+        help="Procesa los datos y guarda unicamente el sistema ELO y el historial Parquet sin entrenar modelos."
+    )
+    args = parser.parse_args()
+    run_training_pipeline(skip_training=args.skip_training)
