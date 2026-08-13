@@ -1,10 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import joblib
 import os
 import pandas as pd
-
+from schemas import TeamsResponse, PredictionResponse
+from data_processing import get_available_teams
 
 # Variables globales para los modelos
 home_stack = None
@@ -81,3 +82,12 @@ def health_check():
         status = "ready"
 
     return {"status": status}
+
+@app.get("/teams", response_model=TeamsResponse)
+def get_teams_list():
+    if(team_history is None):
+        raise HTTPException(
+            status_code=503,
+            detail='La información de los equipos no se ha inicializado de forma correcta. Intente luego.'
+        )
+    return get_available_teams(team_history)
