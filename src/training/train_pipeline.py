@@ -186,7 +186,7 @@ def run_training_pipeline(config_path: str = "config/config.yaml") -> Tuple[Stac
 
     # 2. Llamar a los operarios (Pipeline de Datos)
     data_path = config['paths']['unprocessed_data']
-    df_final, _ = full_pipeline(data_path, elo_system)
+    df_final, team_history = full_pipeline(data_path, elo_system)
 
     training_cols = [
         "diff_goals_5_matches", 
@@ -203,6 +203,7 @@ def run_training_pipeline(config_path: str = "config/config.yaml") -> Tuple[Stac
 
     # 4. Guardar en la bóveda
     save_models(home_stack, away_stack, config['paths']['artifacts_dir'])
+    save_artifacts(elo_system, team_history, artifacts_dir=config['paths']['artifacts_dir'])
     print("--- [PIPELINE] Pipeline finalizado con exito ---")
 
     return home_stack, away_stack
