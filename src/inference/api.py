@@ -4,19 +4,23 @@ from contextlib import asynccontextmanager
 import joblib
 import os
 import pandas as pd
-from schemas import TeamsResponse, PredictionResponse
+from schemas import TeamsResponse, PredictionRequest, PredictionResponse
 from data_processing import get_available_teams
+from results_calc import get_predictions
+from src.config import load_config
 
 # Variables globales para los modelos
 home_stack = None
 away_stack = None
 elo_system = None
 team_history = None
+config = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     
     print("Iniciando servidor. Cargando modelos.")
+    config = load_config()
     load_models()
     load_artifacts()
     try:
@@ -28,6 +32,7 @@ async def lifespan(app: FastAPI):
         away_stack = None
         team_history = None
         elo_system = None
+        config = None
 
 def load_models():
     """Carga los modelos entrenados desde la bóveda (artifacts) al iniciar la API."""
@@ -92,3 +97,49 @@ def get_teams_list():
         )
     return get_available_teams(team_history)
 
+@app.post("/prediction", response_model=PredictionResponse)
+def get_prediction(data: PredictionRequest):
+    global team_history, home_stack, away_stack, elo_system
+
+    if home_stack is None or away_stack is None:
+        raise HTTPException(
+            status_code=500,
+            detail='Los modelos de prediccion no se han inicializado de forma correcta. Intente luego.'
+        )
+
+    if team_history is None or elo_system is None:
+        raise HTTPException(
+            status_code=500,
+            detail='La información de los equipos no se ha inicializado de forma correcta. Intente luego.'
+        )
+    
+    teams = get_available_teams(team_history)
+    home_team : str = data.home_team
+    away_team : str = data.away_team
+    neutral : bool = data.neutral
+    iterations : int = data.iterations
+
+    if iterations <= 0 or iterations > 6:
+        raise HTTPException(
+            status_code=400,
+            detail='La cantidad de iteraciones no es valida. Intenta con un numero mayor a 0 y menor o igual a 6.'
+        )
+    
+    if home_team not in teams or away_team not in teams:
+        raise HTTPException(
+            status_code=400,
+            detail='El equipo no está en la lista de equipos válidos.'
+        )
+    
+    return get_predictions(
+        home_team, 
+        away_team,
+        home_stack, 
+        away_stack, 
+        neutral, 
+        elo_system, 
+        team_history,
+        config=load_config()
+    )
+    
+    
