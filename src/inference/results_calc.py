@@ -52,7 +52,7 @@ def get_predictions(
 
     top_results = get_top_x_probabilities_array(match_matrix, iterations)
     
-    final_prediction : dict = {
+    final_prediction : dict[str, Any] = {
         "home_win_chance" : chances[0],
         "draw_chance" : chances[1],
         "away_win_chance" : chances[2],
