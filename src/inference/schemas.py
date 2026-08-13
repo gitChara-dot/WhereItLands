@@ -9,3 +9,6 @@ class PredictionRequest(BaseModel):
 
 class PredictionResponse(BaseModel):
     results : dict[str, Any]
+
+class TeamsResponse(BaseModel):
+    teams : list[str]
