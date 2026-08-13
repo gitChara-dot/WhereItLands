@@ -7,10 +7,8 @@ from sklearn.metrics import accuracy_score
 from src.math_utils import EloSystem, process_match, get_chances
 from src.data_processing import full_pipeline, split_data
 from src.training import train_models, save_models
+from src.config import load_config
 
-def load_config(config_path: str = "config/config.yaml") -> dict:
-    with open(config_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
 
 def evaluate_models(home_stack, away_stack, x_test, y_reg_test_home, y_reg_test_away, rho: float):
     print("Evaluando modelos con datos de test...")
