@@ -85,9 +85,10 @@ def health_check():
 
 @app.get("/teams", response_model=TeamsResponse)
 def get_teams_list():
-    if(team_history is None):
+    if team_history is None:
         raise HTTPException(
-            status_code=503,
+            status_code=500,
             detail='La información de los equipos no se ha inicializado de forma correcta. Intente luego.'
         )
     return get_available_teams(team_history)
+
