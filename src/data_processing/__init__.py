@@ -5,7 +5,8 @@ from .pipeline import (
     build_team_history,
     build_final_features,
     split_data,
-    full_pipeline
+    full_pipeline,
+    get_available_teams
 )
 
 __all__ = [
@@ -15,5 +16,6 @@ __all__ = [
     'build_team_history',
     'build_final_features',
     'split_data',
-    'full_pipeline'
+    'full_pipeline',
+    'get_available_teams'
 ]
