@@ -4,10 +4,11 @@ from contextlib import asynccontextmanager
 import joblib
 import os
 import pandas as pd
-from schemas import TeamsResponse, PredictionRequest, PredictionResponse
-from data_processing import get_available_teams
-from results_calc import get_predictions
+from src.inference.schemas import TeamsResponse, PredictionRequest, PredictionResponse
+from src.data_processing import get_available_teams
+from src.inference.results_calc import get_predictions
 from src.config import load_config
+
 
 # Variables globales para los modelos
 home_stack = None
