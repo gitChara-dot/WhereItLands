@@ -11,14 +11,14 @@ from sklearn.linear_model import RidgeCV
 from sklearn.compose import TransformedTargetRegressor
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
-from scipy.stats import randint, uniform, loguniform
+from scipy.stats import randint, uniform
 
 from src.math_utils.EloSystem import EloSystem
 from src.data_processing.pipeline import full_pipeline, split_data
 
 
 class ModelTrainer:
-    """Clase responsable de configurar, optimizar y entrenar los modelos de regresion para los goles de local y visitante."""
+    """Configures, tunes, and fits StackingRegressor ensembles for home and away goal predictions."""
 
     def __init__(self, config: Dict[str, Any]) -> None:
         self.config: Dict[str, Any] = config
@@ -28,7 +28,7 @@ class ModelTrainer:
 
     @staticmethod
     def get_param_distributions() -> Tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any], np.ndarray]:
-        """Devuelve las distribuciones de hiperparametros para RandomizedSearchCV."""
+        """Return hyperparameter distributions for randomized search cross-validation."""
         xgb_param_dist = {
             'n_estimators': randint(50, 250),
             'learning_rate': uniform(0.01, 0.15),
@@ -60,7 +60,7 @@ class ModelTrainer:
         y_train: pd.Series, 
         is_home: bool
     ) -> StackingRegressor:
-        """Construye y entrena el StackingRegressor para el objetivo especificado."""
+        """Construct and fit a StackingRegressor pipeline using tuned base estimators."""
         xgb_dist, lgbm_dist, et_dist, alphas = ModelTrainer.get_param_distributions()
         final_optimized_regressor = RidgeCV(alphas=alphas, cv=self.tscv)
 
@@ -75,7 +75,7 @@ class ModelTrainer:
         search_xgb.fit(x_train, y_train)
 
         search_lgbm = RandomizedSearchCV(
-            estimator=LGBMRegressor(objective='poisson', verbose=-1), #type: ignore
+            estimator=LGBMRegressor(objective='poisson', verbose=-1), #type:ignore[arg-type]
             param_distributions=lgbm_dist,
             n_iter=self.n_iter_base,
             n_jobs=-1,
@@ -121,14 +121,14 @@ class ModelTrainer:
         y_reg_home_train: pd.Series, 
         y_reg_away_train: pd.Series
     ) -> Tuple[StackingRegressor, StackingRegressor]:
-        """Entrena ambos stacks (Local y Visitante)."""
-        print("Iniciando entrenamiento del modelo Local (Home)...")
+        """Fit both home and away goal estimation stacks."""
+        print("Training Home Goal Model...")
         home_stack = self.build_and_train_stack(x_train, y_reg_home_train, is_home=True)
-        print("Entrenamiento Home finalizado.")
+        print("Home Goal Model training complete.")
 
-        print("Iniciando entrenamiento del modelo Visitante (Away)...")
+        print("Training Away Goal Model...")
         away_stack = self.build_and_train_stack(x_train, y_reg_away_train, is_home=False)
-        print("Entrenamiento Away finalizado.")
+        print("Away Goal Model training complete.")
 
         return home_stack, away_stack
 
@@ -139,42 +139,42 @@ def train_models(
     y_reg_away_train: pd.Series, 
     config: Dict[str, Any]
 ) -> Tuple[StackingRegressor, StackingRegressor]:
-    """Funcion auxiliar para instanciar el entrenador y ejecutar el entrenamiento de modelos."""
+    """Instantiate trainer and execute model fitting pipelines."""
     trainer = ModelTrainer(config)
     return trainer.train(x_train, y_reg_home_train, y_reg_away_train)
 
 
 def save_models(home_stack: StackingRegressor, away_stack: StackingRegressor, artifacts_dir: str) -> None:
-    """Guarda los modelos entrenados en archivos .joblib dentro del directorio de artefactos."""
+    """Serialize and save trained StackingRegressor models as .joblib files."""
     os.makedirs(artifacts_dir, exist_ok=True)
     home_path: str = os.path.join(artifacts_dir, "home_stack.joblib")
     away_path: str = os.path.join(artifacts_dir, "away_stack.joblib")
 
     joblib.dump(home_stack, home_path)
     joblib.dump(away_stack, away_path)
-    print(f"Modelos guardados exitosamente en '{artifacts_dir}'.")
+    print(f"Models successfully saved to '{artifacts_dir}'.")
 
 
 def save_artifacts(elo_sys: EloSystem, team_history: pd.DataFrame, artifacts_dir: str) -> None:
-    """Guarda el sistema ELO en .joblib y el dataframe historico en .parquet dentro de los artefactos."""
+    """Persist EloSystem state as .joblib and historical feature dataframe as .parquet."""
     os.makedirs(artifacts_dir, exist_ok=True)
     elo_path: str = os.path.join(artifacts_dir, "elo_system.joblib")
     dataframe_path: str = os.path.join(artifacts_dir, "team_history_dataframe.parquet")
 
     joblib.dump(elo_sys, elo_path)
     team_history.to_parquet(dataframe_path, index=False)
-    print(f"Sistema ELO e historial guardados exitosamente en '{artifacts_dir}'.")
+    print(f"Elo system and historical records successfully saved to '{artifacts_dir}'.")
 
 
 def run_training_pipeline(
     config_path: str = "config/config.yaml", 
     skip_training: bool = False
 ) -> Tuple[Optional[StackingRegressor], Optional[StackingRegressor]]:
-    """Ejecuta el pipeline completo de procesamiento de datos, calculo de ELO y entrenamiento opcional de modelos."""
+    """Execute end-to-end data processing, feature engineering, and optional model training."""
     with open(config_path, "r", encoding="utf-8") as f:
         config: Dict[str, Any] = yaml.safe_load(f)
 
-    print("--- [PIPELINE] Iniciando ejecucion del Pipeline de Datos y ELO ---")
+    print("--- [PIPELINE] Initializing Data and Elo Pipeline ---")
     
     elo_system = EloSystem(
         k_values=config['k_values'],
@@ -187,8 +187,8 @@ def run_training_pipeline(
     save_artifacts(elo_system, team_history, artifacts_dir=config['paths']['artifacts_dir'])
 
     if skip_training:
-        print("Opcion skip_training activada. Se omitio el entrenamiento de modelos.")
-        print("--- [PIPELINE] Pipeline finalizado exitosamente (Solo artefactos) ---")
+        print("Option --skip-training enabled. Skipping model fitting.")
+        print("--- [PIPELINE] Artifact generation complete ---")
         return None, None
 
     training_cols: List[str] = [
@@ -203,17 +203,17 @@ def run_training_pipeline(
 
     home_stack, away_stack = train_models(x_train, y_reg_home_train, y_reg_away_train, config)
     save_models(home_stack, away_stack, config['paths']['artifacts_dir'])
-    print("--- [PIPELINE] Pipeline finalizado con exito ---")
+    print("--- [PIPELINE] Training pipeline complete ---")
 
     return home_stack, away_stack
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Pipeline de entrenamiento y generacion de artefactos.")
+    parser = argparse.ArgumentParser(description="Training pipeline and artifact generation runner.")
     parser.add_argument(
         "--skip-training", 
         action="store_true", 
-        help="Procesa los datos y guarda unicamente el sistema ELO y el historial Parquet sin entrenar modelos."
+        help="Process data and save Elo system and Parquet history without fitting models."
     )
     args = parser.parse_args()
     run_training_pipeline(skip_training=args.skip_training)

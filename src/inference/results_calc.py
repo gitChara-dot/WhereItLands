@@ -2,9 +2,11 @@ import pandas as pd
 import numpy as np
 from typing import Dict, Any, List, Tuple
 from sklearn.ensemble import StackingRegressor
+from math import nan
 from src.math_utils.EloSystem import EloSystem
 from src.math_utils.stats_utils import process_match, get_chances, get_top_x_probabilities_array
-from math import nan
+from typing import Optional
+
 def get_predictions(
     home_team: str, 
     away_team: str, 
@@ -16,11 +18,13 @@ def get_predictions(
     config: Dict[str, Any], 
     iterations: int = 3
 ) -> Dict[str, Any]:
-    """Calcula y retorna la prediccion de probabilidades y resultados mas probables de un partido."""
-    rho: float = config.get("constants", {}).get("RHO") or config.get("RHO", nan)
-    
-    if rho is None or rho is nan:
-        raise KeyError("El valor RHO no existe en la configuracion.")
+    """Calculate match probabilities and most likely scorelines from preprocessed team state."""
+    raw_rho: Optional[float] = config.get("constants", {}).get("RHO") or config.get("RHO")
+ 
+    if raw_rho is None or np.isnan(raw_rho):
+        raise KeyError("RHO value not found in configuration.")
+
+    rho : float = float(raw_rho)
 
     home_recent: pd.DataFrame = team_history[team_history["team"] == home_team]
     away_recent: pd.DataFrame = team_history[team_history["team"] == away_team]

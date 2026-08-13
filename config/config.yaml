@@ -13,10 +13,10 @@ training:
   n_iter_stack: 20
 
 k_values:
-  # k-value 60
+  # Major Global Tournaments (K = 60)
   FIFA World Cup: 60
   
-  # k-value 50
+  # Continental Tournaments (K = 50)
   Copa América: 50
   African Cup of Nations: 50
   UEFA Euro: 50
@@ -26,7 +26,7 @@ k_values:
   Confederations Cup: 50
   CONMEBOL–UEFA Cup of Champions: 50
 
-  # --- ELIMINATORIAS PRINCIPALES Y LIGAS DE NACIONES [K = 40] ---
+  # Major Qualifiers and Nations Leagues (K = 40)
   FIFA World Cup qualification: 40
   UEFA Euro qualification: 40
   African Cup of Nations qualification: 40
@@ -35,7 +35,7 @@ k_values:
   CONCACAF Nations League: 40
   Copa América qualification: 40
 
-  # --- TORNEOS REGIONALES OFICIALES / JUEGOS [K = 25] ---
+  # Official Regional Tournaments and Games (K = 25)
   CECAFA Cup: 25
   CFU Caribbean Cup: 25
   COSAFA Cup: 25
@@ -63,7 +63,7 @@ k_values:
   Afro-Asian Games: 25
   Indian Ocean Island Games: 25
 
-  # --- ELIMINATORIAS DE TORNEOS REGIONALES [K = 15] ---
+  # Regional Tournament Qualifiers (K = 15)
   CFU Caribbean Cup qualification: 15
   AFC Challenge Cup qualification: 15
   Gold Cup qualification: 15
@@ -76,7 +76,7 @@ k_values:
   ASEAN Championship qualification: 15
   CONCACAF Championship qualification: 15
 
-  # --- AMISTOSOS TOP E INVITACIONALES IMPORTANTES [K = 10] ---
+  # Major Invitationals and Top Friendlies (K = 10)
   Friendly: 10
   FIFA Series: 10
   Merdeka Tournament: 10
@@ -99,7 +99,7 @@ k_values:
   Marlboro Cup: 10
   Miami Cup: 10
 
-  # --- NO-FIFA / EXHIBICIÓN / COPAS BILATERALES HISTÓRICAS [K = 5] ---
+  # Non-FIFA, Exhibition, and Minor Cups (K = 5)
   CONIFA World Football Cup: 5
   CONIFA European Football Cup: 5
   CONIFA World Football Cup qualification: 5

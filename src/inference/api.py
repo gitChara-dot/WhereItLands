@@ -20,26 +20,28 @@ elo_system: Optional[EloSystem] = None
 team_history: Optional[pd.DataFrame] = None
 config: Optional[Dict[str, Any]] = None
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Administra el ciclo de vida de la aplicacion cargando configuracion, modelos y artefactos."""
+    """Manage application startup and shutdown lifecycle by loading configuration and artifacts."""
     global config, home_stack, away_stack, elo_system, team_history
-    print("Iniciando servidor. Cargando modelos y artefactos.")
+    print("Starting server. Loading models and artifacts...")
     config = load_config()
     load_models()
     load_artifacts()
     try:
         yield
     finally:
-        print("Deteniendo servidor.")
+        print("Shutting down server. Cleaning memory state...")
         home_stack = None
         away_stack = None
         team_history = None
         elo_system = None
         config = None
 
+
 def load_models() -> None:
-    """Carga los modelos entrenados desde la boveda (artifacts) al iniciar la API."""
+    """Load serialized regression models from the artifacts directory."""
     global home_stack, away_stack
     artifacts_dir: str = "artifacts"
     home_path: str = os.path.join(artifacts_dir, "home_stack.joblib")
@@ -48,12 +50,13 @@ def load_models() -> None:
     if os.path.exists(home_path) and os.path.exists(away_path):
         home_stack = joblib.load(home_path)
         away_stack = joblib.load(away_path)
-        print("Modelos cargados exitosamente.")
+        print("Models loaded successfully.")
     else:
-        print("Advertencia: No se encontraron los modelos en artifacts/. Entrena el modelo primero.")
+        print("Warning: Model artifacts not found. Train the models first.")
+
 
 def load_artifacts() -> None:
-    """Carga el dataframe historico y el sistema ELO desde la boveda al iniciar la API."""
+    """Load the historical dataframe and EloSystem instance from the artifacts directory."""
     global elo_system, team_history
     artifacts_dir: str = "artifacts"
     elo_path: str = os.path.join(artifacts_dir, "elo_system.joblib")
@@ -62,13 +65,14 @@ def load_artifacts() -> None:
     if os.path.exists(elo_path) and os.path.exists(dataframe_path):
         elo_system = joblib.load(elo_path)
         team_history = pd.read_parquet(dataframe_path)
-        print("Sistema ELO y dataframe historico cargados correctamente.")
+        print("Elo system and historical records loaded successfully.")
     else:
-        print("Advertencia: No se encontro el sistema ELO o el registro historico de partidos.")
+        print("Warning: Elo system or historical parquet artifact not found.")
+
 
 app = FastAPI(
     title="WhereItLands Predictor", 
-    description="API de Inferencia de Futbol", 
+    description="International Football Match Outcome Prediction API", 
     lifespan=lifespan
 )
 
@@ -80,42 +84,46 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+
 @app.get("/")
 def root() -> Dict[str, str]:
-    """Retorna el mensaje de bienvenida de la API."""
-    return {"message": "Bienvenido a la API de WhereItLands Predictor."}
+    """Return API welcome message and status."""
+    return {"message": "Welcome to the WhereItLands Predictor API."}
+
 
 @app.get("/health")
 def health_check() -> Dict[str, str]:
-    """Verifica el estado de disponibilidad de los modelos y artefactos."""
+    """Check readiness status of loaded models and artifacts."""
     status: str = "models_missing"
     if home_stack is not None and away_stack is not None and elo_system is not None and team_history is not None:
         status = "ready"
     return {"status": status}
 
+
 @app.get("/teams", response_model=TeamsResponse)
 def get_teams_list() -> TeamsResponse:
-    """Retorna la lista de equipos disponibles en el registro historico."""
+    """Return the list of available historical teams."""
     if team_history is None:
         raise HTTPException(
             status_code=500,
-            detail="La informacion de los equipos no se ha inicializado de forma correcta."
+            detail="Team history records have not been properly initialized."
         )
     return TeamsResponse(teams=get_available_teams(team_history))
 
+
 @app.post("/prediction", response_model=PredictionResponse)
 def get_prediction(data: PredictionRequest) -> PredictionResponse:
-    """Calcula y retorna la probabilidad de resultado para un partido especificado."""
+    """Calculate and return match outcome probabilities for the requested teams."""
     if home_stack is None or away_stack is None:
         raise HTTPException(
             status_code=500,
-            detail="Los modelos de prediccion no se han inicializado de forma correcta."
+            detail="Prediction models have not been properly initialized."
         )
 
     if team_history is None or elo_system is None or config is None:
         raise HTTPException(
             status_code=500,
-            detail="La informacion de los equipos o la configuracion no se ha inicializado de forma correcta."
+            detail="Team history or configuration has not been properly initialized."
         )
 
     teams: List[str] = get_available_teams(team_history)
@@ -127,13 +135,13 @@ def get_prediction(data: PredictionRequest) -> PredictionResponse:
     if home_team == away_team:
         raise HTTPException(
             status_code=400,
-            detail="El equipo local y el equipo visitante no pueden ser el mismo."
+            detail="Home team and away team cannot be the same."
         )
 
     if home_team not in teams or away_team not in teams:
         raise HTTPException(
             status_code=400,
-            detail="Uno o ambos equipos no se encuentran en la lista de equipos validos."
+            detail="One or both teams were not found in the historical records."
         )
 
     prediction_result: Dict[str, Any] = get_predictions(
