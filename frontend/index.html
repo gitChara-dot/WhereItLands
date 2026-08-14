@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WhereItLands - International Football Match Prediction Platform powered by Machine Learning and Poisson Modeling.">
+    <title>WhereItLands | Match Prediction Platform</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- Application Header -->
+        <header class="app-header">
+            <div class="header-container">
+                <div class="brand-group">
+                    <div class="brand-badge">ML Engine</div>
+                    <h1 class="brand-title">WhereItLands</h1>
+                </div>
+                <div class="status-indicator" id="systemStatusBadge">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span class="status-label" id="statusLabel">Connecting to API...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="main-container">
+            <div class="dashboard-grid">
+                
+                <!-- Left Column: Match Setup -->
+                <section class="panel-card setup-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Match Configuration</h2>
+                        <p class="panel-subtitle">Select participating national teams and venue parameters.</p>
+                    </div>
+
+                    <form id="predictionForm" class="config-form" novalidate>
+                        <!-- Team Selectors -->
+                        <div class="team-selection-block">
+                            <div class="form-group">
+                                <label for="homeTeamSelect" class="form-label">
+                                    <span class="team-role-badge home-badge">Home</span>
+                                    Home Team
+                                </label>
+                                <div class="select-wrapper">
+                                    <select id="homeTeamSelect" name="home_team" class="custom-select" required>
+                                        <option value="" disabled selected>Loading teams...</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="button" id="swapTeamsBtn" class="swap-teams-btn" title="Swap Home and Away Teams" aria-label="Swap Home and Away Teams">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M7 16V4M7 4L3 8M7 4L11 8M17 8v12M17 20l4-4M17 20l-4-4"/>
+                                </svg>
+                            </button>
+
+                            <div class="form-group">
+                                <label for="awayTeamSelect" class="form-label">
+                                    <span class="team-role-badge away-badge">Away</span>
+                                    Away Team
+                                </label>
+                                <div class="select-wrapper">
+                                    <select id="awayTeamSelect" name="away_team" class="custom-select" required>
+                                        <option value="" disabled selected>Loading teams...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Parameters Block -->
+                        <div class="parameters-block">
+                            <div class="form-group toggle-group">
+                                <div class="toggle-text">
+                                    <label for="neutralToggle" class="form-label no-margin">Neutral Ground</label>
+                                    <span class="field-hint">Disables home pitch rating advantage (+100 Elo points).</span>
+                                </div>
+                                <label class="switch-container">
+                                    <input type="checkbox" id="neutralToggle" name="neutral" checked>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="iterationsInput" class="form-label">Top Scorelines Count</label>
+                                <div class="number-input-wrapper">
+                                    <input 
+                                        type="number" 
+                                        id="iterationsInput" 
+                                        name="iterations" 
+                                        class="custom-number-input" 
+                                        min="1" 
+                                        max="6" 
+                                        value="3" 
+                                        required
+                                    >
+                                </div>
+                                <span class="field-hint">Number of most probable scorelines to calculate (Min: 1, Max: 6).</span>
+                            </div>
+                        </div>
+
+                        <!-- Error Alert Box -->
+                        <div id="errorAlert" class="alert-box alert-error hidden" role="alert">
+                            <span id="errorMessage">An unexpected error occurred.</span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="predictBtn" class="primary-btn">
+                            <span class="btn-text">Run Match Simulation</span>
+                            <span class="btn-spinner hidden" aria-hidden="true"></span>
+                        </button>
+                    </form>
+                </section>
+
+                <!-- Right Column: Analytical Results -->
+                <section class="panel-card results-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Prediction Intelligence</h2>
+                        <p class="panel-subtitle">Probabilistic outcomes derived from bivariate Poisson modeling.</p>
+                    </div>
+
+                    <!-- Placeholder State (Before calculation) -->
+                    <div id="emptyState" class="empty-state-container">
+                        <div class="empty-state-icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24"/>
+                            </svg>
+                        </div>
+                        <h3 class="empty-state-heading">Awaiting Simulation Parameters</h3>
+                        <p class="empty-state-text">Choose the home and away selections to compute expected goal rates (&lambda;), victory likelihoods, and exact score probabilities.</p>
+                    </div>
+
+                    <!-- Populated Results State -->
+                    <div id="resultsContent" class="results-content hidden">
+                        
+                        <!-- Matchup Summary Banner -->
+                        <div class="matchup-banner">
+                            <span id="resHomeName" class="matchup-team team-home">Home</span>
+                            <span class="matchup-vs">VS</span>
+                            <span id="resAwayName" class="matchup-team team-away">Away</span>
+                        </div>
+
+                        <!-- 3-Way Probability Cards -->
+                        <div class="outcome-cards-grid">
+                            <div class="outcome-card card-home">
+                                <span class="outcome-type">Home Win</span>
+                                <div class="outcome-percentage" id="homeWinVal">0.0%</div>
+                                <div class="outcome-bar-track">
+                                    <div class="outcome-bar-fill fill-home" id="homeWinBarFill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="outcome-card card-draw">
+                                <span class="outcome-type">Draw</span>
+                                <div class="outcome-percentage" id="drawVal">0.0%</div>
+                                <div class="outcome-bar-track">
+                                    <div class="outcome-bar-fill fill-draw" id="drawBarFill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="outcome-card card-away">
+                                <span class="outcome-type">Away Win</span>
+                                <div class="outcome-percentage" id="awayWinVal">0.0%</div>
+                                <div class="outcome-bar-track">
+                                    <div class="outcome-bar-fill fill-away" id="awayWinBarFill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Combined Distribution Track -->
+                        <div class="distribution-section">
+                            <div class="distribution-header">
+                                <span class="distribution-title">Outcome Probability Distribution</span>
+                            </div>
+                            <div class="stacked-bar-container">
+                                <div class="stacked-segment segment-home" id="stackedHomeSegment" style="width: 33.3%;"></div>
+                                <div class="stacked-segment segment-draw" id="stackedDrawSegment" style="width: 33.3%;"></div>
+                                <div class="stacked-segment segment-away" id="stackedAwaySegment" style="width: 33.4%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Top Likely Scorelines -->
+                        <div class="scorelines-section">
+                            <h3 class="section-heading">Top Calculated Scorelines</h3>
+                            <div class="table-container">
+                                <table class="scorelines-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="col-rank">Rank</th>
+                                            <th scope="col" class="col-score">Scoreline</th>
+                                            <th scope="col" class="col-prob">Probability</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scorelinesTableBody">
+                                        <!-- Dynamically generated rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Application Footer -->
+        <footer class="app-footer">
+            <div class="footer-container">
+                <p class="footer-text">
+                    WhereItLands &bull; StackingRegressor Ensemble (XGBoost, LightGBM, ExtraTrees) &bull; Bivariate Poisson & Coles-Dixon Model
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
