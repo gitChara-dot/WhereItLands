@@ -34,8 +34,8 @@ def get_predictions(
         raise ValueError("One or more teams has not enough data in the specified date.") 
 
     training_data: Dict[str, float] = {
-        "diff_goals_5_matches": home_stats["last_5_goals_average"] - away_stats["last_5_goals_average"],
-        "diff_vsgoals_5_matches": home_stats["last_5_vsgoals_average"] - away_stats["last_5_vsgoals_average"],
+        "diff_goals_5_matches": home_stats["team_goal_avg"] - away_stats["team_goal_avg"],
+        "diff_vsgoals_5_matches": home_stats["team_vsgoal_avg"] - away_stats["team_vsgoal_avg"],
         "diff_streak_5_matches": home_stats["team_streak_avg"] - away_stats["team_streak_avg"],
         "elo_diff": home_stats["elo"] - away_stats["elo"],
         "home_advantage": 0.0 if neutral else 1.0
