@@ -16,7 +16,8 @@ def get_predictions(
     elo_sys: EloSystem, 
     team_history: pd.DataFrame, 
     config: Dict[str, Any], 
-    iterations: int = 3
+    iterations: int = 3,
+    date:Optional[str] = None
 ) -> Dict[str, Any]:
     """Calculate match probabilities and most likely scorelines from preprocessed team state."""
     raw_rho: Optional[float] = config.get("constants", {}).get("RHO") or config.get("RHO")
@@ -26,25 +27,14 @@ def get_predictions(
 
     rho : float = float(raw_rho)
 
-    home_recent: pd.DataFrame = team_history[team_history["team"] == home_team]
-    away_recent: pd.DataFrame = team_history[team_history["team"] == away_team]
-
-    home_goal_avg: float = home_recent["last_5_goals_average"].iloc[-1]
-    away_goal_avg: float = away_recent["last_5_goals_average"].iloc[-1]
-
-    home_vsgoal_avg: float = home_recent["last_5_vsgoals_average"].iloc[-1]
-    away_vsgoal_avg: float = away_recent["last_5_vsgoals_average"].iloc[-1]
-
-    home_streak_avg: float = home_recent["5_streak"].iloc[-1]
-    away_streak_avg: float = away_recent["5_streak"].iloc[-1]
-
-    elo_diff: float = elo_sys.get_elo(home_team) - elo_sys.get_elo(away_team)
+    home_stats = get_average_stats(home_team, date, team_history)
+    away_stats = get_average_stats(away_team, date, team_history)
 
     training_data: Dict[str, float] = {
-        "diff_goals_5_matches": home_goal_avg - away_goal_avg,
-        "diff_vsgoals_5_matches": home_vsgoal_avg - away_vsgoal_avg,
-        "diff_streak_5_matches": home_streak_avg - away_streak_avg,
-        "elo_diff": elo_diff,
+        "diff_goals_5_matches": home_stats["last_5_goals_average"] - away_stats["last_5_goals_average"],
+        "diff_vsgoals_5_matches": home_stats["last_5_vsgoals_average"] - away_stats["last_5_vsgoals_average"],
+        "diff_streak_5_matches": home_stats["team_streak_avg"] - away_stats["team_streak_avg"],
+        "elo_diff": home_stats["elo"] - away_stats["elo"],
         "home_advantage": 0.0 if neutral else 1.0
     }
 
@@ -68,3 +58,27 @@ def get_predictions(
     }
 
     return final_prediction
+
+
+def get_average_stats(team: str, date: Optional[str], team_history: pd.DataFrame) -> Dict[str, float]:
+
+    """Returns the elo and the average stats on the specified date, of the specified team. 
+    If there's no date, returns the latest stats.
+    If the date is further than the dataframe's date, latest stats will be retrieved.
+    """
+
+    recent_history : pd.DataFrame = team_history[team_history["team"] == team]
+    if date is not None:
+        recent_history = recent_history[recent_history["date"] <= date].copy()
+
+    elo : float = recent_history["elo"].iloc[-1]
+    team_goal_avg: float = recent_history["last_5_goals_average"].iloc[-1]
+    team_vsgoal_avg: float = recent_history["last_5_vsgoals_average"].iloc[-1]
+    team_streak_avg: float = recent_history["5_streak"].iloc[-1]
+
+    return {
+        "elo": elo,
+        "team_goal_avg": team_goal_avg,
+        "team_vsgoal_avg": team_vsgoal_avg,
+        "team_streak_avg": team_streak_avg,
+    }
