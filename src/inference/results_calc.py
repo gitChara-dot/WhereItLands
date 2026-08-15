@@ -30,6 +30,9 @@ def get_predictions(
     home_stats = get_average_stats(home_team, date, team_history)
     away_stats = get_average_stats(away_team, date, team_history)
 
+    if not home_stats or not away_stats:
+        raise ValueError("One or more teams has not enough data in the specified date.") 
+
     training_data: Dict[str, float] = {
         "diff_goals_5_matches": home_stats["last_5_goals_average"] - away_stats["last_5_goals_average"],
         "diff_vsgoals_5_matches": home_stats["last_5_vsgoals_average"] - away_stats["last_5_vsgoals_average"],
@@ -65,12 +68,17 @@ def get_average_stats(team: str, date: Optional[str], team_history: pd.DataFrame
     """Returns the elo and the average stats on the specified date, of the specified team. 
     If there's no date, returns the latest stats.
     If the date is further than the dataframe's date, latest stats will be retrieved.
+    If there's no enough data from the specified date, the dictionary will be empty.
     """
 
     recent_history : pd.DataFrame = team_history[team_history["team"] == team]
+
     if date is not None:
         recent_history = recent_history[recent_history["date"] <= date].copy()
 
+    if recent_history.empty:
+        return {}
+    
     elo : float = recent_history["elo"].iloc[-1]
     team_goal_avg: float = recent_history["last_5_goals_average"].iloc[-1]
     team_vsgoal_avg: float = recent_history["last_5_vsgoals_average"].iloc[-1]
