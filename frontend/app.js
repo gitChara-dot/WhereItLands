@@ -23,6 +23,7 @@
         awaySelect: document.getElementById('awayTeamSelect'),
         swapBtn: document.getElementById('swapTeamsBtn'),
         neutralToggle: document.getElementById('neutralToggle'),
+        dateInput: document.getElementById('dateInput'),
         iterationsInput: document.getElementById('iterationsInput'),
         predictBtn: document.getElementById('predictBtn'),
         btnText: document.querySelector('.btn-text'),
@@ -242,6 +243,7 @@
         const awayTeam = elements.awaySelect.value;
         const isNeutral = elements.neutralToggle.checked;
         const iterations = parseInt(elements.iterationsInput.value, 10);
+        const dateValue = elements.dateInput ? elements.dateInput.value.trim() : '';
 
         if (!homeTeam || !awayTeam) {
             setError('Please select both a home team and an away team.');
@@ -260,18 +262,24 @@
 
         setLoading(true);
 
+        const payload = {
+            home_team: homeTeam,
+            away_team: awayTeam,
+            neutral: isNeutral,
+            iterations: iterations
+        };
+
+        if (dateValue) {
+            payload.date = dateValue;
+        }
+
         try {
             const response = await fetch(`${API_BASE_URL}/prediction`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    home_team: homeTeam,
-                    away_team: awayTeam,
-                    neutral: isNeutral,
-                    iterations: iterations
-                })
+                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
