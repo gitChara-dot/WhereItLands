@@ -6,6 +6,8 @@ import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+
 from sklearn.ensemble import StackingRegressor
 
 from src.config import load_config
@@ -168,3 +170,5 @@ def get_prediction(data: PredictionRequest) -> PredictionResponse:
     )
 
     return PredictionResponse(**prediction_result)
+
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
