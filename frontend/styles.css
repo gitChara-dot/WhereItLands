@@ -259,7 +259,7 @@ body {
     pointer-events: none;
 }
 
-.custom-select, .custom-number-input {
+.custom-select, .custom-number-input, .custom-date-input {
     width: 100%;
     background-color: var(--bg-surface-elevated);
     border: 1px solid var(--border-subtle);
@@ -284,12 +284,18 @@ body {
     font-weight: 600;
 }
 
-.custom-select:hover, .custom-number-input:hover {
+.custom-date-input {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color-scheme: dark;
+}
+
+.custom-select:hover, .custom-number-input:hover, .custom-date-input:hover {
     border-color: var(--border-strong);
     background-color: var(--bg-surface-hover);
 }
 
-.custom-select:focus, .custom-number-input:focus {
+.custom-select:focus, .custom-number-input:focus, .custom-date-input:focus {
     border-color: var(--border-focus);
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
