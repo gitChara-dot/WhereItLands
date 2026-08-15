@@ -55,6 +55,16 @@
     };
 
     /**
+     * Set dynamic date constraints on the date picker.
+     */
+    function initDateConstraints() {
+        if (elements.dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            elements.dateInput.max = today;
+        }
+    }
+
+    /**
      * Display or hide error alert banner with a custom message.
      * @param {string|null} message - Error description or null to dismiss.
      */
@@ -260,6 +270,18 @@
             return;
         }
 
+        if (dateValue) {
+            const today = new Date().toISOString().split('T')[0];
+            if (dateValue > today) {
+                setError('Simulation date cannot be set in the future.');
+                return;
+            }
+            if (dateValue < '2000-01-01') {
+                setError('Simulation date cannot be earlier than 2000-01-01.');
+                return;
+            }
+        }
+
         setLoading(true);
 
         const payload = {
@@ -302,6 +324,7 @@
     elements.swapBtn.addEventListener('click', swapTeams);
 
     // Initial Execution
+    initDateConstraints();
     checkHealth();
     fetchTeams();
 
