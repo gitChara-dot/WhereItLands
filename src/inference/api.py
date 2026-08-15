@@ -131,6 +131,8 @@ def get_prediction(data: PredictionRequest) -> PredictionResponse:
     away_team: str = data.away_team
     neutral: bool = data.neutral
     iterations: int = data.iterations
+    date: Optional[str] = data.date
+
 
     if home_team == away_team:
         raise HTTPException(
@@ -144,6 +146,12 @@ def get_prediction(data: PredictionRequest) -> PredictionResponse:
             detail="One or both teams were not found in the historical records."
         )
 
+    if date < team_history["date"].iloc[-1]:
+        raise HTTPException(
+            status_code=400,
+            detail="Date is before historical data."
+        )
+
     prediction_result: Dict[str, Any] = get_predictions(
         home_team=home_team,
         away_team=away_team,
@@ -153,7 +161,8 @@ def get_prediction(data: PredictionRequest) -> PredictionResponse:
         elo_sys=elo_system,
         team_history=team_history,
         config=config,
-        iterations=iterations
+        iterations=iterations, 
+        date = date
     )
 
     return PredictionResponse(**prediction_result)
