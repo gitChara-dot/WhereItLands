@@ -45,11 +45,14 @@ def apply_elo_system(df: pd.DataFrame, elo_system: EloSystem) -> pd.DataFrame:
         expected_home: float = elo_system.get_expected_result(old_local_elo, old_away_elo, local_advantage_points)
         expected_away: float = elo_system.get_expected_result(old_away_elo, old_local_elo, away_advantage_points)
         
-        goal_multiplier: float = elo_system.get_goal_multiplier(row.home_score, row.away_score)
+        home_score: int = int(row.home_score)  # type: ignore[arg-type]
+        away_score: int = int(row.away_score)  # type: ignore[arg-type]
+
+        goal_multiplier: float = elo_system.get_goal_multiplier(home_score, away_score)
         k_weight: int = elo_system.get_weight(tournament)
         
-        result_home: float = elo_system.get_winner_result(row.home_score, row.away_score)
-        result_away: float = elo_system.get_winner_result(row.away_score, row.home_score)
+        result_home: float = elo_system.get_winner_result(home_score, away_score)
+        result_away: float = elo_system.get_winner_result(away_score, home_score)
 
         elo_system.update_elo(home_team, goal_multiplier, k_weight, result_home, expected_home)
         elo_system.update_elo(away_team, goal_multiplier, k_weight, result_away, expected_away)
