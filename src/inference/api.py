@@ -7,7 +7,6 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
 from sklearn.ensemble import StackingRegressor
 
 from src.config import load_config
@@ -87,12 +86,6 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-def root() -> Dict[str, str]:
-    """Return API welcome message and status."""
-    return {"message": "Welcome to the WhereItLands Predictor API."}
-
-
 @app.get("/health")
 def health_check() -> Dict[str, str]:
     """Check readiness status of loaded models and artifacts."""
@@ -135,7 +128,6 @@ def get_prediction(data: PredictionRequest) -> PredictionResponse:
     iterations: int = data.iterations
     date: Optional[str] = data.date
 
-
     if home_team == away_team:
         raise HTTPException(
             status_code=400,
@@ -166,9 +158,11 @@ def get_prediction(data: PredictionRequest) -> PredictionResponse:
         team_history=team_history,
         config=config,
         iterations=iterations, 
-        date = date
+        date=date
     )
 
     return PredictionResponse(**prediction_result)
 
+
+# Mount static frontend directory at root to serve UI automatically
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
