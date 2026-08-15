@@ -7,7 +7,7 @@ class PredictionRequest(BaseModel):
     away_team: str = Field(..., description="Name of the away team.", examples=["France"])
     neutral: bool = Field(default=True, description="Whether the match is played on neutral ground.")
     iterations: int = Field(default=3, ge=1, le=6, description="Number of most probable scorelines to return (1-6).", examples=[3])
-    date: Optional[str] = Field(default="", description="Date of the match on YYYY-MM-DD format", examples=["2024-03-25"])
+    date: Optional[str] = Field(default=None, description="Date of the match on YYYY-MM-DD format", examples=["2024-03-25"])
 
 class PredictionResponse(BaseModel):
     """Response payload schema containing match outcome probabilities and top scorelines."""
