@@ -146,11 +146,13 @@ def get_prediction(data: PredictionRequest) -> PredictionResponse:
             detail="One or both teams were not found in the historical records."
         )
 
-    if date < team_history["date"].iloc[-1]:
-        raise HTTPException(
-            status_code=400,
-            detail="Date is before historical data."
-        )
+    if date:
+        min_date = str(team_history["date"].min())
+        if date < min_date:
+            raise HTTPException(
+                status_code=400,
+                detail="Date is before historical data."
+            )
 
     prediction_result: Dict[str, Any] = get_predictions(
         home_team=home_team,
