@@ -47,18 +47,13 @@ Thumbs.db
 .ipynb_checkpoints/
 *.ipynb
 
-# Project Data and Artifacts (Large Binaries)
-artifacts/*.joblib
-artifacts/*.parquet
-data/unprocessed/*
 !artifacts/.gitkeep
 !data/.gitkeep
 
 # Processed data 
 data/output/*
 
-# Unprocessed data
-!data/unprocessed/results.csv
+
 
 
 
