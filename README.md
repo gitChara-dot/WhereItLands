@@ -77,12 +77,20 @@ Match weight $K$ is assigned based on competitive context:
 * Tier-1 Friendlies and Invitationals: $K = 10$
 * Exhibition and Unaffiliated Matches: $K = 5$
 
-The goal difference multiplier accounts for performance margins:
+The goal difference multiplier $M(d)$ accounts for performance margins:
 
-$$M(d) = \begin{cases} 1.0 & \text{if } d \le 1 \\ 1.5 & \text{if } d = 2 \\ 1.75 & \text{if } d = 3 \\ 1.75 + \frac{d - 3}{8} & \text{if } d > 3 \end{cases}$$
+$$
+M(d) = 
+\begin{cases} 
+1.0 & \text{if } d \le 1 \\
+1.5 & \text{if } d = 2 \\
+1.75 & \text{if } d = 3 \\
+1.75 + \dfrac{d - 3}{8} & \text{if } d > 3 
+\end{cases}
+$$
 
 ### 2.2 Expected Goal Rate Estimation ($\lambda$)
-To predict the continuous goal-scoring intensity parameters ($\lambda_{\text{home}}, \lambda_{\text{away}}$), a two-level `StackingRegressor` architecture is employed for each side.
+To predict continuous goal-scoring intensity parameters ($\lambda_{\text{home}}, \lambda_{\text{away}}$), a two-level `StackingRegressor` architecture is employed for each side.
 
 * **Base Estimators:**
   * **XGBoost Regressor:** Configured with `count:poisson` objective and `poisson-nloglik` loss function.
@@ -98,7 +106,16 @@ $$P(X=x, Y=y) = \frac{\lambda_h^x e^{-\lambda_h}}{x!} \cdot \frac{\lambda_a^y e^
 
 Where the parameter $\rho = -0.05$ adjusts the joint probability of low-scoring cells:
 
-$$\tau(x, y; \rho) = \begin{cases} 1 - \lambda_h \lambda_a \rho & \text{if } x=0, y=0 \\ 1 + \lambda_h \rho & \text{if } x=0, y=1 \\ 1 + \lambda_a \rho & \text{if } x=1, y=0 \\ 1 - \rho & \text{if } x=1, y=1 \\ 1.0 & \text{otherwise} \end{cases}$$
+$$
+\tau(x, y; \rho) = 
+\begin{cases} 
+1 - \lambda_h \lambda_a \rho & \text{if } x = 0, y = 0 \\
+1 + \lambda_h \rho & \text{if } x = 0, y = 1 \\
+1 + \lambda_a \rho & \text{if } x = 1, y = 0 \\
+1 - \rho & \text{if } x = 1, y = 1 \\
+1.0 & \text{otherwise} 
+\end{cases}
+$$
 
 Aggregate win, draw, and loss probabilities are calculated by summing the corresponding partitions of the matrix, while exact scoreline ranks are derived by sorting matrix coordinates in descending order of density.
 
@@ -207,7 +224,14 @@ WhereItLands/
 │   │   └── stats_utils.py         # Coles-Dixon and Poisson probability matrix utilities
 │   └── training/
 │       └── train_pipeline.py      # StackingRegressor training and tuning pipeline
+├── tests/                         # Automated test suite (Pytest)
+│   ├── test_api.py                # FastAPI endpoint integration tests
+│   ├── test_math_utils.py         # Elo and Coles-Dixon unit tests
+│   └── test_pipeline.py           # Data processing and filtering unit tests
+├── .dockerignore
+├── .gitattributes
 ├── .gitignore
+├── Dockerfile                     # Multi-stage containerization blueprint
 ├── main.py                        # Pipeline CLI entry point
 ├── README.md
 └── requirements.txt               # Pinned Python dependencies
@@ -218,34 +242,67 @@ WhereItLands/
 ## 6. Local Setup and Execution
 
 ### Prerequisites
-* Python 3.10, 3.11, or 3.12
+* Python 3.10, 3.11, or 3.12 (or Docker)
 * Git
 
-### Installation
+### Option A: Standard Python Virtual Environment
 
-Clone the repository and install the required dependencies:
+1. Clone the repository and install dependencies:
+   ```bash
+   git clone https://github.com/gitChara-dot/WhereItLands.git
+   cd WhereItLands
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+2. Start the local server:
+   ```bash
+   uvicorn src.inference.api:app --reload --port 8000
+   ```
+
+3. Access the services:
+   * **Web Application:** `http://127.0.0.1:8000/`
+   * **API Documentation:** `http://127.0.0.1:8000/docs`
+
+### Option B: Running with Docker
+
+1. Build the container image:
+   ```bash
+   docker build -t whereitlands .
+   ```
+
+2. Run the containerized service:
+   ```bash
+   docker run -p 8000:8000 whereitlands
+   ```
+
+3. Access the web interface at `http://localhost:8000/`.
+
+---
+
+## 7. Automated Testing
+
+The repository includes a comprehensive unit and integration test suite using `pytest` and FastAPI `TestClient`.
+
+To execute the test suite:
 
 ```bash
-git clone https://github.com/gitChara-dot/WhereItLands.git
-cd WhereItLands
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+# Run all tests
+python -m pytest
+
+# Run with verbose reporting
+python -m pytest -v
 ```
 
-### Running the API and Web Interface
+**Test Coverage Summary:**
+* **`tests/test_math_utils.py`:** Validates logistic Elo symmetry, rating updates, Coles-Dixon boundary conditions, and Poisson probability matrix integration ($\sum P \approx 1.0$).
+* **`tests/test_pipeline.py`:** Validates match filtering rules, chronological sorting, and team history aggregation.
+* **`tests/test_api.py`:** Tests `GET /health`, `GET /teams`, `POST /prediction` with valid matchups, point-in-time historical dates, and edge case validation (identical or unrecorded teams).
 
-Start the local server using Uvicorn:
+---
 
-```bash
-uvicorn src.inference.api:app --reload --port 8000
-```
-
-Once running, access the services locally:
-* **Web Application:** `http://127.0.0.1:8000/`
-* **Swagger API Documentation:** `http://127.0.0.1:8000/docs`
-
-### Executing the Training Pipeline
+## 8. Executing the Training Pipeline
 
 To recompute Elo ratings, rebuild historical feature matrices, and retrain the stacking ensembles:
 
@@ -259,6 +316,6 @@ python main.py --mode train --skip-training
 
 ---
 
-## 7. License and Acknowledgments
+## 9. License and Acknowledgments
 
 This project is licensed under the MIT License. Match records and historical data are sourced from international football archives under open research licenses.
