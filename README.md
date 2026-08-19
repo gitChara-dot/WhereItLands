@@ -2,6 +2,8 @@
 
 An end-to-end Machine Learning and statistical inference system designed to model, simulate, and predict international football match outcomes. The platform combines tournament-weighted dynamic Elo ratings, rolling historical feature engineering, multi-model stacking regression, and a bivariate Poisson distribution corrected with the Coles-Dixon model for low-scoring match dependency.
 
+[![CI / Automated Testing Pipeline](https://github.com/gitChara-dot/WhereItLands/actions/workflows/ci.yml/badge.svg)](https://github.com/gitChara-dot/WhereItLands/actions/workflows/ci.yml)
+
 **Live Demo:** [https://whereitlands.onrender.com](https://whereitlands.onrender.com)  
 **Interactive API Documentation:** [https://whereitlands.onrender.com/docs](https://whereitlands.onrender.com/docs)
 
@@ -198,6 +200,9 @@ Executes single-match inference based on current ratings or historical point-in-
 
 ```
 WhereItLands/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                 # Automated testing CI pipeline (GitHub Actions)
 ├── artifacts/                     # Serialized artifacts (models, Elo state, Parquet history)
 │   ├── away_stack.joblib
 │   ├── elo_system.joblib
@@ -281,11 +286,11 @@ WhereItLands/
 
 ---
 
-## 7. Automated Testing
+## 7. Automated Testing and CI/CD
 
-The repository includes a comprehensive unit and integration test suite using `pytest` and FastAPI `TestClient`.
+The repository includes a comprehensive unit and integration test suite evaluated on every commit via **GitHub Actions CI**.
 
-To execute the test suite:
+To execute the test suite locally:
 
 ```bash
 # Run all tests
