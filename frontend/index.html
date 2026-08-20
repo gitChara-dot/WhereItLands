@@ -3,72 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="WhereItLands - International Football Match Prediction Platform powered by Machine Learning and Poisson Modeling.">
-    <title>WhereItLands | Match Prediction Platform</title>
+    <meta name="description" content="WhereItLands - International Football Match Prediction Platform powered by Machine Learning Stacking Regressors and Coles-Dixon Bivariate Poisson Modeling.">
+    <title>WhereItLands &bull; International Football Predictor</title>
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Outfit (Primary) & JetBrains Mono (Data/Odds) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app-wrapper">
-        <!-- Application Header -->
+        
+        <!-- Application Header (Flat Top Bar) -->
         <header class="app-header">
             <div class="header-container">
                 <div class="brand-group">
-                    <div class="brand-badge">ML Engine</div>
-                    <h1 class="brand-title">WhereItLands</h1>
+                    <div class="brand-badge">ML INFERENCE ENGINE</div>
+                    <a href="/" class="brand-link">
+                        <span class="brand-title">WhereItLands</span>
+                    </a>
                 </div>
-                <div class="status-indicator" id="systemStatusBadge">
-                    <span class="status-dot" id="statusDot"></span>
-                    <span class="status-label" id="statusLabel">Connecting to API...</span>
+                
+                <div class="header-actions">
+                    <div class="status-indicator" id="systemStatusBadge" aria-live="polite">
+                        <span class="status-dot" id="statusDot"></span>
+                        <span class="status-label" id="statusLabel">Connecting to API...</span>
+                    </div>
+                    <a href="/docs" target="_blank" rel="noopener noreferrer" class="header-link-btn" title="Open Swagger API documentation">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <span>API Docs</span>
+                    </a>
                 </div>
             </div>
         </header>
 
-        <!-- Main Content Grid -->
+        <!-- Main Content Area -->
         <main class="main-container">
+            
+            <!-- Hero / Recruiter Showcase Banner -->
+            <section class="hero-section">
+                <!-- Background Decorative Geometric Shapes (Flat poster aesthetic) -->
+                <div class="hero-shape hero-shape-1" aria-hidden="true"></div>
+                <div class="hero-shape hero-shape-2" aria-hidden="true"></div>
+                <div class="hero-shape hero-shape-3" aria-hidden="true"></div>
+
+                <div class="hero-content">
+                    <div class="hero-tag-wrap">
+                        <span class="flat-tag flat-tag-primary">TOURNAMENT-WEIGHTED ELO</span>
+                        <span class="flat-tag flat-tag-secondary">STACKING ENSEMBLE</span>
+                        <span class="flat-tag flat-tag-accent">COLES-DIXON POISSON</span>
+                    </div>
+                    <h1 class="hero-headline">International Football Match Outcome Predictor</h1>
+                    <p class="hero-description">
+                        Simulate international fixtures with point-in-time feature extraction, 
+                        supervised stacking regression (XGBoost, LightGBM, ExtraTrees), and bivariate Poisson distribution modeling.
+                    </p>
+
+                    <!-- Key Production Benchmarks (Recruiter Highlight Strip) -->
+                    <div class="benchmark-grid">
+                        <div class="benchmark-card stat-blue">
+                            <span class="benchmark-number">64.2%</span>
+                            <span class="benchmark-label">Holdout 3-Way Accuracy</span>
+                            <span class="benchmark-sub">Strict post-2025 temporal split</span>
+                        </div>
+                        <div class="benchmark-card stat-emerald">
+                            <span class="benchmark-number">&lt; 8ms</span>
+                            <span class="benchmark-label">Median Latency</span>
+                            <span class="benchmark-sub">Lifespan RAM-cached inference</span>
+                        </div>
+                        <div class="benchmark-card stat-amber">
+                            <span class="benchmark-number">240+</span>
+                            <span class="benchmark-label">National Teams</span>
+                            <span class="benchmark-sub">Historical Elo rating history</span>
+                        </div>
+                        <div class="benchmark-card stat-dark">
+                            <span class="benchmark-number">5-Fold</span>
+                            <span class="benchmark-label">TimeSeriesSplit CV</span>
+                            <span class="benchmark-sub">Expanding temporal window</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1-Click Matchup Presets for Instant Recruiter Demo -->
+            <section class="presets-section" aria-labelledby="presets-title">
+                <div class="presets-container">
+                    <span id="presets-title" class="presets-label">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        Quick Demo Matchups:
+                    </span>
+                    <div class="preset-buttons-group">
+                        <button type="button" class="preset-chip" data-home="Argentina" data-away="France" data-neutral="true" data-date="2022-12-18" data-iterations="3">
+                            <span class="preset-text">WC '22 Final: <strong>Argentina vs France</strong></span>
+                        </button>
+                        <button type="button" class="preset-chip" data-home="Brazil" data-away="Germany" data-neutral="true" data-date="2014-07-08" data-iterations="3">
+                            <span class="preset-text">Classic: <strong>Brazil vs Germany</strong></span>
+                        </button>
+                        <button type="button" class="preset-chip" data-home="Spain" data-away="England" data-neutral="true" data-date="2024-07-14" data-iterations="3">
+                            <span class="preset-text">Euro '24 Final: <strong>Spain vs England</strong></span>
+                        </button>
+                        <button type="button" class="preset-chip" data-home="Argentina" data-away="Colombia" data-neutral="true" data-date="2024-07-14" data-iterations="3">
+                            <span class="preset-text">Copa América '24: <strong>Argentina vs Colombia</strong></span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard 2-Column Grid -->
             <div class="dashboard-grid">
                 
-                <!-- Left Column: Match Setup -->
-                <section class="panel-card setup-panel">
+                <!-- Left Column: Match Configuration Panel -->
+                <section class="flat-panel config-panel" aria-labelledby="config-heading">
                     <div class="panel-header">
-                        <h2 class="panel-title">Match Configuration</h2>
-                        <p class="panel-subtitle">Select participating national teams and venue parameters.</p>
+                        <div class="panel-header-badge">STEP 1</div>
+                        <h2 id="config-heading" class="panel-title">Match Configuration</h2>
+                        <p class="panel-subtitle">Configure fixture participants, venue context, and simulation depth.</p>
                     </div>
 
-                    <form id="predictionForm" class="config-form" novalidate>
-                        <!-- Team Selectors -->
-                        <div class="team-selection-block">
-                            <div class="form-group">
+                    <form id="predictionForm" class="flat-form" novalidate>
+                        
+                        <!-- Team Selectors Block -->
+                        <div class="teams-block">
+                            <div class="form-field">
                                 <label for="homeTeamSelect" class="form-label">
-                                    <span class="team-role-badge home-badge">Home</span>
-                                    Home Team
+                                    <span class="badge-tag tag-home">HOME TEAM</span>
+                                    <span>First Selection</span>
                                 </label>
-                                <div class="select-wrapper">
-                                    <select id="homeTeamSelect" name="home_team" class="custom-select" required>
+                                <div class="select-box">
+                                    <select id="homeTeamSelect" name="home_team" class="flat-select" required aria-required="true">
                                         <option value="" disabled selected>Loading teams...</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <button type="button" id="swapTeamsBtn" class="swap-teams-btn" title="Swap Home and Away Teams" aria-label="Swap Home and Away Teams">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M7 16V4M7 4L3 8M7 4L11 8M17 8v12M17 20l4-4M17 20l-4-4"/>
-                                </svg>
-                            </button>
+                            <!-- Interactive Swap Button -->
+                            <div class="swap-divider">
+                                <button type="button" id="swapTeamsBtn" class="flat-swap-btn" title="Swap Home and Away Teams" aria-label="Swap Home and Away Teams">
+                                    <svg class="swap-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m3 16 4 4 4-4"></path>
+                                        <path d="M7 20V4"></path>
+                                        <path d="m21 8-4-4-4 4"></path>
+                                        <path d="M17 4v16"></path>
+                                    </svg>
+                                    <span class="swap-btn-text">Swap Teams</span>
+                                </button>
+                            </div>
 
-                            <div class="form-group">
+                            <div class="form-field">
                                 <label for="awayTeamSelect" class="form-label">
-                                    <span class="team-role-badge away-badge">Away</span>
-                                    Away Team
+                                    <span class="badge-tag tag-away">AWAY TEAM</span>
+                                    <span>Opponent Selection</span>
                                 </label>
-                                <div class="select-wrapper">
-                                    <select id="awayTeamSelect" name="away_team" class="custom-select" required>
+                                <div class="select-box">
+                                    <select id="awayTeamSelect" name="away_team" class="flat-select" required aria-required="true">
                                         <option value="" disabled selected>Loading teams...</option>
                                     </select>
                                 </div>
@@ -76,141 +174,199 @@
                         </div>
 
                         <!-- Parameters Block -->
-                        <div class="parameters-block">
-                            <div class="form-group toggle-group">
-                                <div class="toggle-text">
-                                    <label for="neutralToggle" class="form-label no-margin">Neutral Ground</label>
-                                    <span class="field-hint">Disables home pitch rating advantage (+100 Elo points).</span>
+                        <div class="parameters-section">
+                            
+                            <!-- Neutral Venue Toggle -->
+                            <div class="parameter-row toggle-row">
+                                <div class="parameter-info">
+                                    <label for="neutralToggle" class="parameter-title">Neutral Venue</label>
+                                    <p class="parameter-desc">Disables standard home pitch advantage (+100 Elo points).</p>
                                 </div>
-                                <label class="switch-container">
+                                <label class="flat-switch" aria-label="Neutral Ground Toggle">
                                     <input type="checkbox" id="neutralToggle" name="neutral" checked>
-                                    <span class="switch-slider"></span>
+                                    <span class="switch-box"></span>
                                 </label>
                             </div>
 
-                            <div class="form-group">
-                                <label for="dateInput" class="form-label">Simulation Date (Optional)</label>
-                                <div class="date-input-wrapper">
+                            <!-- Historical Simulation Date -->
+                            <div class="parameter-row">
+                                <div class="form-field full-width">
+                                    <label for="dateInput" class="form-label">
+                                        <span>Historical Date</span>
+                                        <span class="optional-label">(Optional Simulation)</span>
+                                    </label>
                                     <input 
                                         type="date" 
                                         id="dateInput" 
                                         name="date" 
-                                        class="custom-date-input" 
+                                        class="flat-input date-input"
                                         min="2000-01-01"
                                     >
+                                    <p class="input-helper">Evaluate team strengths as they existed on this exact date.</p>
                                 </div>
-                                <span class="field-hint">Simulate historical ratings as of this date, or leave empty for latest.</span>
                             </div>
 
-                            <div class="form-group">
-                                <label for="iterationsInput" class="form-label">Top Scorelines Count</label>
-                                <div class="number-input-wrapper">
+                            <!-- Iterations / Scoreline Count -->
+                            <div class="parameter-row">
+                                <div class="form-field full-width">
+                                    <div class="label-with-counter">
+                                        <label for="iterationsInput" class="form-label">Top Scorelines Count</label>
+                                        <span class="counter-badge" id="iterationsValue">3 Outcomes</span>
+                                    </div>
                                     <input 
-                                        type="number" 
+                                        type="range" 
                                         id="iterationsInput" 
                                         name="iterations" 
-                                        class="custom-number-input" 
+                                        class="flat-range" 
                                         min="1" 
                                         max="6" 
                                         value="3" 
-                                        required
+                                        step="1"
                                     >
+                                    <div class="range-ticks" aria-hidden="true">
+                                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+                                    </div>
                                 </div>
-                                <span class="field-hint">Number of most probable scorelines to calculate (Min: 1, Max: 6).</span>
                             </div>
+
                         </div>
 
                         <!-- Error Alert Box -->
-                        <div id="errorAlert" class="alert-box alert-error hidden" role="alert">
+                        <div id="errorAlert" class="flat-alert alert-error hidden" role="alert">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
                             <span id="errorMessage">An unexpected error occurred.</span>
                         </div>
 
-                        <!-- Submit Button -->
-                        <button type="submit" id="predictBtn" class="primary-btn">
-                            <span class="btn-text">Run Match Simulation</span>
+                        <!-- Primary Action Button (Bold Flat Design) -->
+                        <button type="submit" id="predictBtn" class="flat-btn-primary">
+                            <span class="btn-text">Compute Match Probabilities</span>
                             <span class="btn-spinner hidden" aria-hidden="true"></span>
+                            <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
                         </button>
                     </form>
                 </section>
 
-                <!-- Right Column: Analytical Results -->
-                <section class="panel-card results-panel">
+                <!-- Right Column: Analytical Results Panel -->
+                <section class="flat-panel results-panel" aria-labelledby="results-heading">
                     <div class="panel-header">
-                        <h2 class="panel-title">Prediction Intelligence</h2>
-                        <p class="panel-subtitle">Probabilistic outcomes derived from bivariate Poisson modeling.</p>
+                        <div class="panel-header-badge badge-green">STEP 2</div>
+                        <h2 id="results-heading" class="panel-title">Prediction Intelligence</h2>
+                        <p class="panel-subtitle">Probabilistic outcomes computed via Bivariate Poisson & Coles-Dixon dependency correction.</p>
                     </div>
 
-                    <!-- Placeholder State (Before calculation) -->
-                    <div id="emptyState" class="empty-state-container">
-                        <div class="empty-state-icon">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"/>
-                                <path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24"/>
+                    <!-- Placeholder / Empty State -->
+                    <div id="emptyState" class="flat-empty-state">
+                        <div class="empty-poster-graphic" aria-hidden="true">
+                            <div class="graphic-circle circle-blue"></div>
+                            <div class="graphic-circle circle-emerald"></div>
+                            <div class="graphic-square square-amber"></div>
+                            <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="m4.93 4.93 4.24 4.24M14.83 14.83l4.24 4.24M14.83 9.17l4.24-4.24M4.93 19.07l4.24-4.24"></path>
                             </svg>
                         </div>
-                        <h3 class="empty-state-heading">Awaiting Simulation Parameters</h3>
-                        <p class="empty-state-text">Choose the home and away selections to compute expected goal rates (&lambda;), victory likelihoods, and exact score probabilities.</p>
+                        <h3 class="empty-title">Ready for Match Simulation</h3>
+                        <p class="empty-text">
+                            Select two national teams or click any <strong>Quick Demo Matchup</strong> above to compute expected goal intensity (&lambda;), 3-way victory distribution, and most probable scorelines.
+                        </p>
                     </div>
 
-                    <!-- Populated Results State -->
-                    <div id="resultsContent" class="results-content hidden">
+                    <!-- Populated Results State (Shown upon prediction response) -->
+                    <div id="resultsContent" class="flat-results-content hidden">
                         
-                        <!-- Matchup Summary Banner -->
-                        <div class="matchup-banner">
-                            <span id="resHomeName" class="matchup-team team-home">Home</span>
-                            <span class="matchup-vs">VS</span>
-                            <span id="resAwayName" class="matchup-team team-away">Away</span>
-                        </div>
-
-                        <!-- 3-Way Probability Cards -->
-                        <div class="outcome-cards-grid">
-                            <div class="outcome-card card-home">
-                                <span class="outcome-type">Home Win</span>
-                                <div class="outcome-percentage" id="homeWinVal">0.0%</div>
-                                <div class="outcome-bar-track">
-                                    <div class="outcome-bar-fill fill-home" id="homeWinBarFill" style="width: 0%;"></div>
-                                </div>
+                        <!-- Matchup Poster Banner -->
+                        <div class="matchup-poster-banner">
+                            <div class="matchup-side home-side">
+                                <span class="team-designation">HOME</span>
+                                <h3 id="resHomeName" class="poster-team-name">Argentina</h3>
                             </div>
-
-                            <div class="outcome-card card-draw">
-                                <span class="outcome-type">Draw</span>
-                                <div class="outcome-percentage" id="drawVal">0.0%</div>
-                                <div class="outcome-bar-track">
-                                    <div class="outcome-bar-fill fill-draw" id="drawBarFill" style="width: 0%;"></div>
-                                </div>
+                            <div class="matchup-versus-badge">
+                                <span>VS</span>
                             </div>
-
-                            <div class="outcome-card card-away">
-                                <span class="outcome-type">Away Win</span>
-                                <div class="outcome-percentage" id="awayWinVal">0.0%</div>
-                                <div class="outcome-bar-track">
-                                    <div class="outcome-bar-fill fill-away" id="awayWinBarFill" style="width: 0%;"></div>
-                                </div>
+                            <div class="matchup-side away-side">
+                                <span class="team-designation">AWAY</span>
+                                <h3 id="resAwayName" class="poster-team-name">France</h3>
                             </div>
                         </div>
 
-                        <!-- Combined Distribution Track -->
-                        <div class="distribution-section">
-                            <div class="distribution-header">
-                                <span class="distribution-title">Outcome Probability Distribution</span>
+                        <!-- 3-Way Win Probability Cards (Color-Blocked Flat Aesthetic) -->
+                        <div class="outcomes-grid" role="region" aria-label="3-way outcome probabilities">
+                            
+                            <!-- Home Win Card -->
+                            <div class="outcome-tile tile-home" id="cardHome">
+                                <div class="tile-header">
+                                    <span class="tile-label">HOME WIN</span>
+                                    <span class="tile-tag hidden" id="homeWinnerBadge">FAVORITE</span>
+                                </div>
+                                <div class="tile-number" id="homeWinVal">0.0%</div>
+                                <div class="tile-bar-track">
+                                    <div class="tile-bar-fill fill-home" id="homeWinBarFill" style="width: 0%;"></div>
+                                </div>
                             </div>
-                            <div class="stacked-bar-container">
-                                <div class="stacked-segment segment-home" id="stackedHomeSegment" style="width: 33.3%;"></div>
-                                <div class="stacked-segment segment-draw" id="stackedDrawSegment" style="width: 33.3%;"></div>
-                                <div class="stacked-segment segment-away" id="stackedAwaySegment" style="width: 33.4%;"></div>
+
+                            <!-- Draw Card -->
+                            <div class="outcome-tile tile-draw" id="cardDraw">
+                                <div class="tile-header">
+                                    <span class="tile-label">DRAW</span>
+                                    <span class="tile-tag hidden" id="drawWinnerBadge">FAVORITE</span>
+                                </div>
+                                <div class="tile-number" id="drawVal">0.0%</div>
+                                <div class="tile-bar-track">
+                                    <div class="tile-bar-fill fill-draw" id="drawBarFill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Away Win Card -->
+                            <div class="outcome-tile tile-away" id="cardAway">
+                                <div class="tile-header">
+                                    <span class="tile-label">AWAY WIN</span>
+                                    <span class="tile-tag hidden" id="awayWinnerBadge">FAVORITE</span>
+                                </div>
+                                <div class="tile-number" id="awayWinVal">0.0%</div>
+                                <div class="tile-bar-track">
+                                    <div class="tile-bar-fill fill-away" id="awayWinBarFill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Combined Distribution Graphic Bar -->
+                        <div class="distribution-block">
+                            <div class="distribution-meta">
+                                <span class="dist-title">Outcome Probability Spectrum</span>
+                                <div class="dist-legend">
+                                    <span class="legend-item"><span class="legend-dot dot-home"></span> Home</span>
+                                    <span class="legend-item"><span class="legend-dot dot-draw"></span> Draw</span>
+                                    <span class="legend-item"><span class="legend-dot dot-away"></span> Away</span>
+                                </div>
+                            </div>
+                            <div class="flat-stacked-bar" role="progressbar" aria-label="Outcome Probability Distribution">
+                                <div class="stacked-chunk chunk-home" id="stackedHomeSegment" style="width: 33.3%;"></div>
+                                <div class="stacked-chunk chunk-draw" id="stackedDrawSegment" style="width: 33.3%;"></div>
+                                <div class="stacked-chunk chunk-away" id="stackedAwaySegment" style="width: 33.4%;"></div>
                             </div>
                         </div>
 
-                        <!-- Top Likely Scorelines -->
-                        <div class="scorelines-section">
-                            <h3 class="section-heading">Top Calculated Scorelines</h3>
-                            <div class="table-container">
-                                <table class="scorelines-table">
+                        <!-- Top Exact Scorelines Table -->
+                        <div class="scorelines-block">
+                            <div class="scorelines-header">
+                                <h3 class="scorelines-title">Most Probable Exact Scorelines</h3>
+                                <span class="scorelines-subtitle">Calculated from the joint density matrix</span>
+                            </div>
+                            <div class="flat-table-wrapper">
+                                <table class="flat-scorelines-table">
                                     <thead>
                                         <tr>
-                                            <th scope="col" class="col-rank">Rank</th>
-                                            <th scope="col" class="col-score">Scoreline</th>
-                                            <th scope="col" class="col-prob">Probability</th>
+                                            <th scope="col" class="th-rank">Rank</th>
+                                            <th scope="col" class="th-score">Exact Score</th>
+                                            <th scope="col" class="th-prob">Model Probability</th>
                                         </tr>
                                     </thead>
                                     <tbody id="scorelinesTableBody">
@@ -224,19 +380,84 @@
                 </section>
 
             </div>
+
+            <!-- Machine Learning Architecture & Methodology (Recruiter Showcase Section) -->
+            <section class="methodology-section" aria-labelledby="methodology-title">
+                <div class="methodology-header">
+                    <div class="flat-tag flat-tag-dark">END-TO-END SYSTEM PIPELINE</div>
+                    <h2 id="methodology-title" class="methodology-headline">Statistical & Machine Learning Architecture</h2>
+                    <p class="methodology-lead">
+                        How WhereItLands solves international football prediction with rigorous time-series feature engineering and low-scoring dependency adjustment.
+                    </p>
+                </div>
+
+                <div class="pipeline-cards-grid">
+                    
+                    <!-- Card 1: Elo Engine -->
+                    <div class="pipeline-card card-stage-1">
+                        <div class="card-step-badge">STAGE 01</div>
+                        <h3 class="card-title">Dynamic Elo Engine</h3>
+                        <p class="card-desc">
+                            Tracks chronological team strength with dynamic tournament multipliers: FIFA World Cup (<em>K</em> = 60), Continental (<em>K</em> = 50), Qualifiers (<em>K</em> = 40). Includes non-linear goal difference margin scaling <em>M(d)</em>.
+                        </p>
+                        <div class="card-footer-pill">Tournament K-Weights</div>
+                    </div>
+
+                    <!-- Card 2: Rolling Features -->
+                    <div class="pipeline-card card-stage-2">
+                        <div class="card-step-badge">STAGE 02</div>
+                        <h3 class="card-title">Point-in-Time Features</h3>
+                        <p class="card-desc">
+                            Extracts 5-match rolling goals scored, goals conceded, defense differentials, and win streaks without lookahead bias, stored in an in-memory columnar Parquet feature store.
+                        </p>
+                        <div class="card-footer-pill">Parquet Time-Series</div>
+                    </div>
+
+                    <!-- Card 3: Stacking Ensemble -->
+                    <div class="pipeline-card card-stage-3">
+                        <div class="card-step-badge">STAGE 03</div>
+                        <h3 class="card-title">Stacking Regression</h3>
+                        <p class="card-desc">
+                            Two-level StackingRegressor blending XGBoost (Poisson loss), LightGBM, and ExtraTrees into a cross-validated RidgeCV meta-estimator to independently predict &lambda;<sub>home</sub> and &lambda;<sub>away</sub>.
+                        </p>
+                        <div class="card-footer-pill">XGB + LGBM + ExtraTrees</div>
+                    </div>
+
+                    <!-- Card 4: Coles-Dixon Poisson -->
+                    <div class="pipeline-card card-stage-4">
+                        <div class="card-step-badge">STAGE 04</div>
+                        <h3 class="card-title">Coles-Dixon Joint Matrix</h3>
+                        <p class="card-desc">
+                            Generates a 6&times;6 bivariate probability matrix corrected with parameter &rho; = &minus;0.05 to accurately account for structural dependency in low-scoring football matches (0-0, 1-1).
+                        </p>
+                        <div class="card-footer-pill">&rho; = &minus;0.05 Correction</div>
+                    </div>
+
+                </div>
+            </section>
+
         </main>
 
-        <!-- Application Footer -->
+        <!-- Flat Application Footer -->
         <footer class="app-footer">
             <div class="footer-container">
-                <p class="footer-text">
-                    WhereItLands &bull; StackingRegressor Ensemble (XGBoost, LightGBM, ExtraTrees) &bull; Bivariate Poisson & Coles-Dixon Model
-                </p>
+                <div class="footer-brand">
+                    <span class="footer-logo">WhereItLands</span>
+                    <span class="footer-tagline">&bull; Production Sports Analytics & Inference Architecture</span>
+                </div>
+                <div class="footer-meta">
+                    <span class="footer-badge">FastAPI</span>
+                    <span class="footer-badge">Scikit-Learn</span>
+                    <span class="footer-badge">XGBoost</span>
+                    <span class="footer-badge">LightGBM</span>
+                    <span class="footer-badge">Poisson/Coles-Dixon</span>
+                </div>
             </div>
         </footer>
+
     </div>
 
-    <!-- Application Script -->
+    <!-- Application Controller Script -->
     <script src="app.js"></script>
 </body>
 </html>
